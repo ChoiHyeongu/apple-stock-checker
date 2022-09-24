@@ -3,9 +3,14 @@ import { helper } from './src/utils/index.js';
 import db from './src/db/index.js';
 
 const LOCATION = '05803';
+const CHECK_CYCLE = 3000;
+const PROCESS = {
+  START: 0,
+  STOP: 1,
+};
 
-async function fetchStockInfo(code, location) {
-  const response = await api.apple.getStock({ productCode: code, location });
+async function fetchDeliveryInfo(sku, location) {
+  const response = await api.apple.getStock({ productCode: sku, location });
 
   const {
     body: {
@@ -13,32 +18,53 @@ async function fetchStockInfo(code, location) {
     },
   } = response;
 
-  return deliveryMessage[code].regular.isBuyable;
+  return deliveryMessage[sku].regular;
 }
 
-async function fetchStockInfos(models, location) {
+async function logKindOfModel(kind) {
+  const now = helper.now('YYYY.M.D HH:mm:ss');
+  console.log(`<${kind}>`, now);
+}
+
+async function logStockInfo(deliveryInfo) {
+  const buyableMessage = deliveryInfo.isBuyable ? '구매 가능' : '재고 없음';
+  console.log(` - ${deliveryInfo.subHeader} - ${buyableMessage}`);
+}
+
+async function logStockInfos(stockInfos) {
+  stockInfos.forEach(logStockInfo);
+}
+
+async function getModelsDeliveryInfo(models, location) {
   const result = await Promise.all(
-    Object.entries(models).map(async ([code, spec]) => {
-      const isBuyable = await fetchStockInfo(code, location);
-      return { result: isBuyable, data: { code, spec } };
+    Object.keys(models).map(async (sku) => {
+      const result = await fetchDeliveryInfo(sku, location);
+      return result;
     })
   );
   return result;
 }
 
+async function checkDeliveryStocks(kind, models) {
+  try {
+    logKindOfModel(kind);
+    const stockInfos = await getModelsDeliveryInfo(models, LOCATION);
+    logStockInfos(stockInfos);
+  } catch (err) {}
+}
+
 async function run() {
-  while (true) {
+  const status = PROCESS.START;
+
+  while (status) {
     for (const [kind, models] of Object.entries(db)) {
-      const now = helper.now('YYYY.M.D HH:mm:ss');
-      console.log(`<${kind}>`, now);
-      const buyableList = await fetchStockInfos(models, LOCATION);
-      buyableList.forEach(({ result, data }) => {
-        const { code, spec } = data;
-        console.log(`  - [${code}] ${spec.size}-${spec.color}-${spec.storage}: ${result ? '구매 가능' : '재고 없음'}`);
-      });
-      console.log('');
+      await checkDeliveryStocks(kind, models);
     }
-    await helper.delay(3000);
+    console.log('');
+    await helper.delay(CHECK_CYCLE);
+
+    //TODO: 특정 조건을 만족하면 프로세스 종료
+    // status = PROCESS.STOP
   }
 }
 
