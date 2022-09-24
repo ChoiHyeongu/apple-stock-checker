@@ -1,4 +1,4 @@
-export const IPHONE14_PRO = {
+export const IPHONE_14_PRO = {
   SIZE: {
     _14_RPO: '6.1',
     _14_PRO_MAX: '6.7',
@@ -11,8 +11,8 @@ export const IPHONE14_PRO = {
   },
   STORAGE: {
     _128GB: '128gb',
-    _256GB: '128gb',
-    _512GB: '128gb',
+    _256GB: '256gb',
+    _512GB: '512gb',
     _1TB: '1tb',
   },
 };
