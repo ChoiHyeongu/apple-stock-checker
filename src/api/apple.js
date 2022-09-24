@@ -10,7 +10,7 @@ import { sku } from '../db/sku.js';
 export function getStock({ productCode, location }) {
   const url = createURL();
   return request.get(url);
-  // return request.get(`shop/fulfillment-messages?pl=true&mts.0=regular&parts.0=${productCode}&location=${location}`);
+  return request.get(`shop/fulfillment-messages?pl=true&mts.0=regular&parts.0=${productCode}&location=${location}`);
 }
 
 const createURL = () => {

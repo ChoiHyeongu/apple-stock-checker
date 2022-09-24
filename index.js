@@ -1,6 +1,6 @@
-import api from './api/index.js';
-import { helper } from './utils/index.js';
-import db from './db/index.js';
+import api from './src/api/index.js';
+import { helper } from './src/utils/index.js';
+import db from './src/db/index.js';
 
 async function fetchStockInfo(code, location) {
   const response = await api.apple.getStock({ productCode: code, location });
