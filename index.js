@@ -25,8 +25,6 @@ async function fetchStockInfos(models, location) {
 }
 
 async function run() {
-  const response = await api.apple.getStock({ productCode: '1', location: '1' });
-  console.log('response', response);
   while (true) {
     for (const [kind, models] of Object.entries(db)) {
       const now = helper.now('YYYY.M.D HH:mm:ss');
@@ -34,8 +32,9 @@ async function run() {
       const buyableList = await fetchStockInfos(models, '05803');
       buyableList.forEach(({ result, data }) => {
         const { code, spec } = data;
-        console.log(`[${code}] ${spec.size}-${spec.color}-${spec.storage}: ${result ? '구매 가능' : '재고 없음'}`);
+        console.log(`  - [${code}] ${spec.size}-${spec.color}-${spec.storage}: ${result ? '구매 가능' : '재고 없음'}`);
       });
+      console.log('');
     }
     await helper.delay(3000);
   }
