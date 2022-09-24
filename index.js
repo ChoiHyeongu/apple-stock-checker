@@ -9,7 +9,7 @@ async function fetchStockInfo(code, location) {
 
   const {
     body: {
-      content: { deliveryMessage, pickupMessage },
+      content: { deliveryMessage },
     },
   } = response;
 
