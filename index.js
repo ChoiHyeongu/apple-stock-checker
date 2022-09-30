@@ -45,12 +45,18 @@ async function getModelsDeliveryInfo(models, location) {
   return result;
 }
 
+function onFailedGetDeliveryInfo() {
+  //TODO: 에러 처리
+}
+
 async function checkDeliveryStocks(kind, models) {
   try {
     logKindOfModel(kind);
     const stockInfos = await getModelsDeliveryInfo(models, LOCATION);
     logStockInfos(stockInfos);
-  } catch (err) {}
+  } catch (err) {
+    onFailedGetDeliveryInfo();
+  }
 }
 
 async function run() {

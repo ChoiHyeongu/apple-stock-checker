@@ -1,5 +1,4 @@
 import request from '../request/index.js';
-import { sku } from '../db/sku.js';
 
 /**
  * 현장 재고 정보 가져오기
